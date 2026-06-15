@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理測驗分類 | 你的網站名稱</title>
+    <style>
+        /* 全域樣式重設 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Microsoft JhengHei";
+        }
+
+        body {
+            background-color: #f7f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 頁首樣式 */
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        /* 主要內容區塊 */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* 分類網格佈局 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* 分類卡片樣式 */
+        .category-card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 懸停效果 */
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 卡片上方顏色條 (用來區分不同類別) */
+        .card-badge {
+            height: 8px;
+        }
+        .bg-personality { background: #667eea; } /* 性格 - 藍紫色 */
+        .bg-career { background: #ed8936; }      /* 職業 - 橘色 */
+        .bg-love { background: #ed64a6; }        /* 戀愛 - 粉色 */
+        .bg-interpersonal { background: #38b2ac; }/* 人際 - 青色 */
+        .bg-stress { background: #9f7aea; }       /* 壓力 - 紫色 */
+
+        /* 卡片內容 */
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* 卡片動作按鈕 */
+        .card-action {
+            color: #4a5568;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            transition: color 0.2s;
+        }
+
+        .category-card:hover .card-action {
+            color: #667eea; /* 懸停時箭頭變色 */
+        }
+
+        /* 響應式調整 */
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px auto;
+            }
+            header h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>心理測驗專區</h1>
+        <p>透過科學與趣味的測驗，探索未知的自己</p>
+    </header>
+
+    <div class="container">
+        <div class="category-grid">
+
+            <a href="quiz-list-personality.html" class="category-card">
+                <div class="card-badge bg-personality"></div>
+                <div class="card-content">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title">性格特質</div>
+                    <div class="card-desc">探索你的內在人格、MBTI 傾向以及潛在的行為模式，更深入地認識自己。</div>
+                    <div class="card-action">進入測驗 →</div>
+                </div>
+            </a>
+
+            <a href="quiz-list-career.html" class="category-card">
+                <div class="card-badge bg-career"></div>
+                <div class="card-content">
+                    <div class="card-icon">💼</div>
+                    <div class="card-title">職業與天賦</div>
+                    <div class="card-desc">發掘你的職場優勢、領導潛力，並尋找最適合你發展的職涯方向。</div>
+                    <div class="card-action">進入測驗 →</div>
+                </div>
+            </a>
+
+            <a href="quiz-list-love.html" class="category-card">
+                <div class="card-badge bg-love"></div>
+                <div class="card-content">
+                    <div class="card-icon">❤️</div>
+                    <div class="card-title">戀愛與感情</div>
+                    <div class="card-desc">分析你的依附風格、愛情觀，以及在親密關係中渴望的互動模式。</div>
+                    <div class="card-action">進入測驗 →</div>
+                </div>
+            </a>
+
+            <a href="quiz-list-interpersonal.html" class="category-card">
+                <div class="card-badge bg-interpersonal"></div>
+                <div class="card-content">
+                    <div class="card-icon">🤝</div>
+                    <div class="card-title">人際與社交</div>
+                    <div class="card-desc">評估你的社交敏感度、溝通風格，提升在群體與朋友間的互動指南。</div>
+                    <div class="card-action">進入測驗 →</div>
+                </div>
+            </a>
+
+            <a href="quiz-list-stress.html" class="category-card">
+                <div class="card-badge bg-stress"></div>
+                <div class="card-content">
+                    <div class="card-icon">🧘</div>
+                    <div class="card-title">情緒與壓力</div>
+                    <div class="card-desc">檢測你目前的壓力指數、焦慮狀態，並提供專屬的心靈舒壓建議。</div>
+                    <div class="card-action">進入測驗 →</div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>
