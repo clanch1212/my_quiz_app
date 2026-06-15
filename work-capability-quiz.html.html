@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>職場超能力心理測驗</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+  * { font-family: 'Noto Sans TC', sans-serif; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulse-ring {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.08); opacity: 0.7; }
+  }
+  .fade-up   { animation: fadeUp 0.45s ease both; }
+  .spinner   { animation: spin 0.9s linear infinite; }
+  .pulse     { animation: pulse-ring 1.6s ease-in-out infinite; }
+  .screen    { display: none; }
+  .screen.active { display: block; }
+  .opt-btn {
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .opt-btn:hover {
+    transform: translateX(6px);
+    box-shadow: 0 4px 20px rgba(127,119,221,0.18);
+    border-color: #7F77DD;
+  }
+  .opt-btn:active { transform: scale(0.97); }
+  .progress-fill { transition: width 0.45s ease; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+
+<div class="w-full max-w-lg mx-auto">
+
+  <!-- 開始畫面 -->
+  <div id="start" class="screen active fade-up text-center py-10 px-4">
+    <div class="text-7xl mb-6">⚡</div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-3 leading-snug">職場超能力<br>心理測驗</h1>
+    <p class="text-gray-500 text-lg mb-8 leading-relaxed">
+      5 個職場情境，測出你隱藏的超能力<br>選出最符合你的答案，結果出乎意料地準確！
+    </p>
+    <button onclick="startQuiz()"
+      class="bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-semibold text-lg px-10 py-4 rounded-2xl transition-all duration-150 shadow-lg shadow-indigo-200">
+      開始測驗 →
+    </button>
+  </div>
+
+  <!-- 題目畫面 -->
+  <div id="question" class="screen">
+    <div class="bg-white rounded-3xl shadow-xl shadow-indigo-100 p-6 sm:p-8">
+      <!-- 進度 -->
+      <div class="flex items-center gap-3 mb-6">
+        <span id="q-num" class="text-sm font-medium text-indigo-400 shrink-0">1 / 5</span>
+        <div class="flex-1 h-1.5 bg-indigo-100 rounded-full overflow-hidden">
+          <div id="progress" class="progress-fill h-full bg-indigo-400 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+      <!-- 題目 -->
+      <p id="q-text" class="text-xl sm:text-2xl font-semibold text-gray-800 leading-relaxed mb-7"></p>
+      <!-- 選項 -->
+      <div id="options" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+
+  <!-- 計算中畫面 -->
+  <div id="loading" class="screen text-center py-16 px-4 fade-up">
+    <div class="relative inline-block mb-8">
+      <div class="pulse w-20 h-20 rounded-full bg-indigo-100 absolute inset-0 m-auto"></div>
+      <div class="relative w-20 h-20 rounded-full border-4 border-indigo-200 border-t-indigo-500 spinner mx-auto"></div>
+    </div>
+    <p class="text-2xl font-bold text-gray-800 mb-2">計算中...</p>
+    <p class="text-gray-400 text-base">正在分析你的職場超能力</p>
+    <div class="flex justify-center gap-1.5 mt-6">
+      <span class="w-2 h-2 bg-indigo-300 rounded-full" style="animation: pulse-ring 1.2s 0s infinite ease-in-out both"></span>
+      <span class="w-2 h-2 bg-indigo-400 rounded-full" style="animation: pulse-ring 1.2s 0.2s infinite ease-in-out both"></span>
+      <span class="w-2 h-2 bg-indigo-500 rounded-full" style="animation: pulse-ring 1.2s 0.4s infinite ease-in-out both"></span>
+    </div>
+  </div>
+
+  <!-- 結果畫面 -->
+  <div id="result" class="screen fade-up">
+    <div class="bg-white rounded-3xl shadow-xl shadow-indigo-100 overflow-hidden">
+      <div id="result-header" class="px-6 pt-8 pb-6 text-center"></div>
+      <div id="result-body" class="px-6 pb-8 pt-2 border-t border-gray-100"></div>
+    </div>
+    <button onclick="startQuiz()"
+      class="mt-5 w-full text-indigo-500 hover:text-indigo-700 text-base font-medium transition-colors py-2">
+      再測一次
+    </button>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    text: "團隊遇到緊急危機，你的第一反應是？",
+    opts: [
+      { letter: "A", text: "立刻召集大家，分工解決問題" },
+      { letter: "B", text: "冷靜分析根本原因，找出最優解" },
+      { letter: "C", text: "先安撫大家情緒，維持團隊士氣" }
+    ]
+  },
+  {
+    text: "老闆丟給你一個全新的專案，你最先做什麼？",
+    opts: [
+      { letter: "A", text: "馬上組隊，發揮每個人的強項" },
+      { letter: "B", text: "獨自研究，把方向和細節都想清楚" },
+      { letter: "C", text: "先和相關人員聊聊，了解大家的期望" }
+    ]
+  },
+  {
+    text: "同事的提案有明顯漏洞，你會怎麼做？",
+    opts: [
+      { letter: "A", text: "直接指出來，並帶著大家一起修正" },
+      { letter: "B", text: "私下準備好完整的改善方案再提出" },
+      { letter: "C", text: "用提問的方式，讓對方自己發現問題" }
+    ]
+  },
+  {
+    text: "工作量超載，deadline 快到了，你選擇？",
+    opts: [
+      { letter: "A", text: "快速決定優先順序，帶頭衝刺完成" },
+      { letter: "B", text: "整理清單，用最有效率的方式逐項完成" },
+      { letter: "C", text: "主動協調資源，請求跨部門支援" }
+    ]
+  },
+  {
+    text: "如果你有一個超能力，你最希望是？",
+    opts: [
+      { letter: "A", text: "讓所有人都願意跟著你走" },
+      { letter: "B", text: "看穿問題核心，瞬間找到解法" },
+      { letter: "C", text: "讓每個人都感到被理解和重視" }
+    ]
+  }
+];
+
+const results = {
+  A: {
+    icon: "🦁",
+    badge: "天生領袖型",
+    badgeColor: "bg-amber-100 text-amber-700",
+    headerBg: "from-amber-50 to-orange-50",
+    title: "統御之力",
+    subtitle: "你是讓人心甘情願跟隨的那種人",
+    desc: "你擁有強大的行動力與感染力，危機時刻反而是你發光的時候。你天生懂得整合資源、激發團隊潛能，讓每個人都能找到自己的位置並發揮最大價值。你的職場超能力是「讓整個團隊變得比你更強」。",
+    traits: ["果斷行動", "感召人心", "危機處理", "資源整合", "天生領袖"],
+    traitColor: "bg-amber-50 text-amber-700 border-amber-200"
+  },
+  B: {
+    icon: "🔮",
+    badge: "策略思考型",
+    badgeColor: "bg-indigo-100 text-indigo-700",
+    headerBg: "from-indigo-50 to-purple-50",
+    title: "洞察之眼",
+    subtitle: "你看到的，別人還在霧中摸索",
+    desc: "你擁有超強的邏輯分析能力，能夠從混亂中找到秩序，從問題中看見本質。別人還在討論症狀，你已經找到根源了。你的職場超能力是「把複雜問題化為清晰路徑」，是組織裡最值得信賴的大腦。",
+    traits: ["深度分析", "系統思維", "精準判斷", "獨立作業", "解題高手"],
+    traitColor: "bg-indigo-50 text-indigo-700 border-indigo-200"
+  },
+  C: {
+    icon: "🌊",
+    badge: "共鳴連結型",
+    badgeColor: "bg-teal-100 text-teal-700",
+    headerBg: "from-teal-50 to-emerald-50",
+    title: "共感之心",
+    subtitle: "你讓每個人都覺得自己很重要",
+    desc: "你擁有極高的情緒智商，能夠感知他人的需求，在無形中建立信任與連結。你是組織裡最重要的黏合劑，讓不同個性的人能夠和諧協作。你的職場超能力是「讓人際關係成為組織最大的競爭優勢」。",
+    traits: ["高度同理", "溝通橋樑", "建立信任", "衝突化解", "凝聚人心"],
+    traitColor: "bg-teal-50 text-teal-700 border-teal-200"
+  }
+};
+
+let answers = [], current = 0;
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.classList.remove('fade-up');
+  });
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  void el.offsetWidth;
+  el.classList.add('fade-up');
+}
+
+function startQuiz() {
+  answers = []; current = 0;
+  renderQ();
+  show('question');
+}
+
+function renderQ() {
+  const q = questions[current];
+  document.getElementById('q-num').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress').style.width = (current / questions.length * 100) + '%';
+  document.getElementById('q-text').textContent = q.text;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  const letters = ['A', 'B', 'C'];
+  const colors = [
+    'bg-indigo-50 text-indigo-600',
+    'bg-purple-50 text-purple-600',
+    'bg-pink-50 text-pink-600'
+  ];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn w-full text-left flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white';
+    btn.innerHTML = `
+      <span class="shrink-0 w-9 h-9 rounded-xl ${colors[i]} font-bold text-sm flex items-center justify-center">${letters[i]}</span>
+      <span class="text-base sm:text-lg text-gray-700 leading-snug">${opt.text}</span>
+    `;
+    btn.onclick = () => pick(opt.letter);
+    opts.appendChild(btn);
+  });
+}
+
+function pick(letter) {
+  answers.push(letter);
+  current++;
+  if (current < questions.length) {
+    renderQ();
+    const card = document.querySelector('#question > div');
+    card.classList.remove('fade-up');
+    void card.offsetWidth;
+    card.classList.add('fade-up');
+  } else {
+    document.getElementById('progress').style.width = '100%';
+    show('loading');
+    setTimeout(showResult, 3000);
+  }
+}
+
+function showResult() {
+  const count = { A: 0, B: 0, C: 0 };
+  answers.forEach(a => count[a]++);
+  const winner = Object.keys(count).reduce((a, b) => count[a] >= count[b] ? a : b);
+  const r = results[winner];
+
+  document.getElementById('result-header').className = `px-6 pt-8 pb-6 text-center bg-gradient-to-br ${r.headerBg}`;
+  document.getElementById('result-header').innerHTML = `
+    <div class="text-6xl mb-4">${r.icon}</div>
+    <span class="inline-block text-xs font-semibold px-4 py-1.5 rounded-full ${r.badgeColor} mb-3">${r.badge}</span>
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">職場超能力：${r.title}</h2>
+    <p class="text-gray-500 text-base">${r.subtitle}</p>
+  `;
+
+  const traitsHtml = r.traits.map(t =>
+    `<span class="text-sm px-3 py-1.5 rounded-full border ${r.traitColor}">${t}</span>`
+  ).join('');
+
+  document.getElementById('result-body').innerHTML = `
+    <p class="text-gray-600 text-base leading-relaxed mb-5 mt-4">${r.desc}</p>
+    <div class="flex flex-wrap gap-2 mb-2">${traitsHtml}</div>
+  `;
+
+  show('result');
+}
+</script>
+</body>
+</html>
