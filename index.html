@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈探索研究院 - 熱門心理測驗與性格分析</title>
+    <!-- 引入 Tailwind CSS 網頁美化庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-height-screen flex flex-col">
+
+    <!-- 導覽列 (Navbar) - 提升網站專業度，AdSense 必看 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold text-indigo-600 tracking-wide">🧠 心靈探索研究院</a>
+            <div class="space-x-4 text-sm font-medium text-gray-600">
+                <a href="Quiz/quiz-category.html" class="hover:text-indigo-600 transition">心理測驗</a>
+                <a href="#articles" class="hover:text-indigo-600 transition">深度文章</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 網站大標題區 (Hero Section) -->
+    <header class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-16 px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight">探索未知的自己</h1>
+            <p class="text-indigo-100 text-lg md:text-xl font-light">透過科學與趣味兼具的心理測驗，解鎖你的潛在人格與職場優勢。</p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="max-w-6xl mx-auto px-4 py-12 flex-grow w-full">
+        
+        <!-- 區塊一：熱門心理測驗 (#quizzes) -->
+        <section id="quizzes" class="mb-16">
+            <div class="flex items-center space-x-2 mb-8">
+                <span class="text-2xl">🔥</span>
+                <h2 class="text-2xl font-bold text-gray-900">熱門心理測驗</h2>
+            </div>
+            
+            <!-- 卡片網格：自動隨螢幕大小調整為 1, 2 或 3 欄 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- 測驗卡片 1 -->
+                <div class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden hover:shadow-md transition flex flex-col">
+                    <div class="p-6 flex-grow">
+                        <span class="bg-indigo-50 text-indigo-600 text-xs font-semibold px-2.5 py-1 rounded-sm mb-4 inline-block">職場必測</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">職場超能力特質測驗</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-4">你在團隊中扮演什麼角色？一分鐘測出你的核心競爭力與潛在職場危機。</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <!-- 🔗 這裡記得連結到你 quizzes 資料夾下的正確網頁 -->
+                        <a href="Main/Quiz/work-capability-quiz.html" class="block text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm">開始測驗</a>
+                    </div>
+                </div>
+
+                <!-- 測驗卡片 2 -->
+                <div class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden hover:shadow-md transition flex flex-col">
+                    <div class="p-6 flex-grow">
+                        <span class="bg-pink-50 text-pink-600 text-xs font-semibold px-2.5 py-1 rounded-sm mb-4 inline-block">情感兩性</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">戀愛風格與依附人格</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-4">你在感情中是安全型、焦慮型還是逃避型？解開你一直以來的戀愛盲點。</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <a href="Main/Quiz/love-style-quiz.html" class="block text-center bg-pink-600 hover:bg-pink-700 text-white font-medium py-2.5 rounded-xl transition text-sm">開始測驗</a>
+                    </div>
+                </div>
+
+                <!-- 測驗卡片 3 (預留位置，你可以自己改名字或增加) -->
+                <div class="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden hover:shadow-md transition flex flex-col">
+                    <div class="p-6 flex-grow">
+                        <span class="bg-green-50 text-green-600 text-xs font-semibold px-2.5 py-1 rounded-sm mb-4 inline-block">日常趣味</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">金錢觀與發財體質測試</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-4">看看你的潛意識是如何看待財富的？測出你最容易致富的隱藏天賦。</p>
+                    </div>
+                    <div class="p-6 pt-0">
+                        <a href="Main/Quiz/money-mindset-quiz.html" class="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-xl transition text-sm">開始測驗</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 區塊二：深度心理學文章 (#articles) - 應付 AdSense 審核的關鍵 -->
+        <section id="articles">
+            <div class="flex items-center space-x-2 mb-8">
+                <span class="text-2xl">📚</span>
+                <h2 class="text-2xl font-bold text-gray-900">心理學專欄文章</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- 文章列表 1 -->
+                <a href="articles/what-is-mbti.html" class="bg-white p-6 rounded-2xl shadow-xs border border-gray-100 hover:border-indigo-200 hover:shadow-md transition block">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 hover:text-indigo-600 transition">深入淺出 MBTI：十六種人格是如何決定我們的行為？</h3>
+                    <p class="text-gray-500 text-sm line-clamp-2">MBTI 在近年全球爆紅，但它背後的心理學基礎是什麼？本文將為你拆解內向與外向、直覺與感覺之間的真實差異...</p>
+                    <span class="text-xs text-gray-400 mt-4 block">閱讀時間約 5 分鐘</span>
+                </a>
+
+                <!-- 文章列表 2 -->
+                <a href="Articles/burnout.html" class="bg-white p-6 rounded-2xl shadow-xs border border-gray-100 hover:border-indigo-200 hover:shadow-md transition block">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 hover:text-indigo-600 transition">拒絕職場精神內耗！專家教你三招緩解日常焦慮</h3>
+                    <p class="text-gray-500 text-sm line-clamp-2">面對高壓的工作環境，你是否常常陷入自我懷疑？透過簡單的覺察練習與正念技巧，重新奪回情緒的主導權...</p>
+                    <span class="text-xs text-gray-400 mt-4 block">閱讀時間約 4 分鐘</span>
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 (Footer) - 包含合規條款，AdSense 必備 -->
+    <footer class="bg-gray-900 text-gray-400 py-8 border-t border-gray-800 text-sm">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                &copy; 2026 心靈探索研究院. All rights reserved.
+            </div>
+            <!-- 🔗 這裡預留了隱私權政策與聯絡頁面 -->
+            <div class="flex space-x-6">
+                <a href="privacy.html" class="hover:text-white transition">隱私權政策</a>
+                <a href="about.html" class="hover:text-white transition">關於我們</a>
+                <a href="contact.html" class="hover:text-white transition">聯絡我們</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

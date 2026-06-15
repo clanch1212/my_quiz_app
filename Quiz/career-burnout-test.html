@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>職業倦怠度測試</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+  * { font-family: 'Noto Sans TC', sans-serif; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1);   opacity: 0.6; }
+    50%       { transform: scale(1.15); opacity: 1;   }
+  }
+  @keyframes barGrow {
+    from { width: 0; }
+    to   { width: var(--target-w); }
+  }
+
+  .fade-up  { animation: fadeUp 0.42s cubic-bezier(.22,.68,0,1.2) both; }
+  .spinner  { animation: spin 1s linear infinite; }
+  .breathe  { animation: breathe 2s ease-in-out infinite; }
+
+  .screen   { display: none; }
+  .screen.active { display: block; }
+
+  .opt-btn  { transition: transform .15s, box-shadow .15s, border-color .15s, background .15s; }
+  .opt-btn:hover  { transform: translateX(5px); box-shadow: 0 4px 18px rgba(0,0,0,.08); }
+  .opt-btn:active { transform: scale(.97); }
+
+  .progress-fill { transition: width .5s ease; }
+
+  .bar-anim { animation: barGrow .8s ease both; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-rose-50 via-white to-orange-50 flex items-center justify-center p-4">
+
+<div class="w-full max-w-lg mx-auto">
+
+  <!-- ─── 開始畫面 ─── -->
+  <div id="start" class="screen active fade-up text-center py-12 px-4">
+    <div class="text-7xl mb-5">🔋</div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-3 leading-snug">職業倦怠度測試</h1>
+    <p class="text-gray-500 text-lg mb-8 leading-relaxed">
+      8 道真實情境題，誠實作答<br>測出你現在的職場能量還剩多少
+    </p>
+    <div class="flex justify-center gap-4 mb-8 text-sm text-gray-400">
+      <span>⏱ 約 2 分鐘</span>
+      <span>·</span>
+      <span>🔒 完全匿名</span>
+      <span>·</span>
+      <span>📊 4 種結果</span>
+    </div>
+    <button onclick="startQuiz()"
+      class="bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-semibold text-lg px-10 py-4 rounded-2xl transition-all duration-150 shadow-lg shadow-rose-200">
+      開始測試 →
+    </button>
+  </div>
+
+  <!-- ─── 題目畫面 ─── -->
+  <div id="question" class="screen">
+    <div id="q-card" class="bg-white rounded-3xl shadow-xl shadow-rose-100/60 p-6 sm:p-8">
+
+      <!-- 進度列 -->
+      <div class="flex items-center gap-3 mb-6">
+        <span id="q-num" class="text-sm font-medium text-rose-400 shrink-0 tabular-nums">1 / 8</span>
+        <div class="flex-1 h-1.5 bg-rose-100 rounded-full overflow-hidden">
+          <div id="progress" class="progress-fill h-full bg-rose-400 rounded-full" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- 題目文字 -->
+      <p id="q-text" class="text-xl sm:text-2xl font-semibold text-gray-800 leading-relaxed mb-7"></p>
+
+      <!-- 選項 -->
+      <div id="options" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+
+  <!-- ─── 計算中 ─── -->
+  <div id="loading" class="screen text-center py-16 px-4">
+    <div class="relative w-20 h-20 mx-auto mb-8">
+      <div class="breathe absolute inset-0 rounded-full bg-rose-100"></div>
+      <div class="absolute inset-0 rounded-full border-4 border-rose-200 border-t-rose-500 spinner"></div>
+      <span class="absolute inset-0 flex items-center justify-center text-2xl">🔋</span>
+    </div>
+    <p class="text-2xl font-bold text-gray-800 mb-2">計算中...</p>
+    <p class="text-gray-400 text-base">正在分析你的職場能量狀態</p>
+    <div class="flex justify-center gap-2 mt-6">
+      <span class="w-2 h-2 rounded-full bg-rose-300" style="animation:breathe 1.2s 0s   infinite ease-in-out both"></span>
+      <span class="w-2 h-2 rounded-full bg-rose-400" style="animation:breathe 1.2s .2s  infinite ease-in-out both"></span>
+      <span class="w-2 h-2 rounded-full bg-rose-500" style="animation:breathe 1.2s .4s  infinite ease-in-out both"></span>
+    </div>
+  </div>
+
+  <!-- ─── 結果畫面 ─── -->
+  <div id="result" class="screen fade-up">
+    <div class="bg-white rounded-3xl shadow-xl shadow-rose-100/60 overflow-hidden">
+      <div id="result-header" class="px-6 pt-8 pb-6 text-center"></div>
+      <div id="result-score"  class="px-6 py-4 border-t border-gray-100"></div>
+      <div id="result-body"   class="px-6 pb-8 border-t border-gray-100"></div>
+    </div>
+    <button onclick="startQuiz()"
+      class="mt-5 w-full text-rose-400 hover:text-rose-600 text-base font-medium transition-colors py-2">
+      重新測試
+    </button>
+  </div>
+
+</div><!-- /max-w -->
+
+<script>
+const questions = [
+  {
+    text: "早上鬧鐘響起，你的第一個念頭是？",
+    opts: [
+      { letter:"A", text:"「又要上班了⋯⋯」，根本不想起床" },
+      { letter:"B", text:"「還好還好，撐一下」，有點無奈但還能動" },
+      { letter:"C", text:"正常起床，沒有特別抗拒" }
+    ]
+  },
+  {
+    text: "面對手邊的工作任務，你通常是？",
+    opts: [
+      { letter:"A", text:"能拖就拖，什麼都提不起勁" },
+      { letter:"B", text:"機械式完成，沒有什麼熱情但還是會做" },
+      { letter:"C", text:"按部就班完成，甚至偶爾還有成就感" }
+    ]
+  },
+  {
+    text: "下班後你最常做的事是？",
+    opts: [
+      { letter:"A", text:"躺平滑手機，腦子完全空白" },
+      { letter:"B", text:"偶爾追劇或社交，但常感覺很累" },
+      { letter:"C", text:"有自己的生活節奏，週末也玩得開心" }
+    ]
+  },
+  {
+    text: "同事說「這個專案很有意思」，你的反應？",
+    opts: [
+      { letter:"A", text:"心裡翻白眼，完全感受不到意義" },
+      { letter:"B", text:"嘴上附和，其實已經麻木了" },
+      { letter:"C", text:"會想了解，可能也覺得有趣" }
+    ]
+  },
+  {
+    text: "你上一次對工作感到真心滿足是什麼時候？",
+    opts: [
+      { letter:"A", text:"想不起來了，感覺是很久很久以前的事" },
+      { letter:"B", text:"偶爾有，但很快就被壓力蓋過去了" },
+      { letter:"C", text:"最近就有，雖然不多但還是有的" }
+    ]
+  },
+  {
+    text: "身體狀況方面，你最近有沒有？",
+    opts: [
+      { letter:"A", text:"睡不好、常頭痛或腸胃不舒服，壓力反應很明顯" },
+      { letter:"B", text:"偶爾失眠或疲勞感強，但沒有特別嚴重" },
+      { letter:"C", text:"身體大致還好，休息後都能恢復" }
+    ]
+  },
+  {
+    text: "如果現在有一個新機會，你的第一個反應是？",
+    opts: [
+      { letter:"A", text:"不想動，只想快點離職或休息，什麼都不想管" },
+      { letter:"B", text:"有點心動，但懶得折騰，繼續撐著比較省事" },
+      { letter:"C", text:"會認真考慮，說不定能帶來新的刺激" }
+    ]
+  },
+  {
+    text: "你覺得現在的工作對你來說是？",
+    opts: [
+      { letter:"A", text:"消耗我的一切，只是在混日子等下班" },
+      { letter:"B", text:"就是份工作，談不上喜歡也沒到厭惡" },
+      { letter:"C", text:"雖然有壓力，但整體還算在我能接受的範圍" }
+    ]
+  }
+];
+
+/* 4 種結果：依 A 佔比決定
+   A ≥ 6 → 嚴重燃盡
+   A = 4-5 → 中度倦怠
+   A = 2-3 → 輕度疲憊
+   A ≤ 1  → 狀態穩定
+*/
+const results = [
+  {
+    key: "S",
+    icon: "💀",
+    badge: "嚴重燃盡型",
+    badgeCls: "bg-red-100 text-red-700",
+    headerBg: "from-red-50 to-rose-100",
+    title: "電量：危急 🔴",
+    subtitle: "你已經在燃盡邊緣，需要認真照顧自己了",
+    desc: "你的答案顯示你正承受著極高的職業倦怠壓力——身心俱疲、對工作失去意義感，甚至連休息都很難真正放鬆。這不是你太脆弱，而是系統真的超載了。現在最重要的事，不是「撐下去」，而是認真考慮是否需要休假、調整工作結構，甚至尋求專業協助。你值得被好好照顧。",
+    advice: ["認真評估是否需要請假或離職", "預約身心科或諮商師談談", "停止用罪惡感壓榨自己"],
+    adviceCls: "bg-red-50 text-red-700 border-red-200",
+    barCls: "bg-red-400",
+    barPct: 92
+  },
+  {
+    key: "M",
+    icon: "🪫",
+    badge: "中度倦怠型",
+    badgeCls: "bg-orange-100 text-orange-700",
+    headerBg: "from-orange-50 to-amber-50",
+    title: "電量：偏低 🟠",
+    subtitle: "油箱快見底了，得開始補充能量",
+    desc: "你還撐著，但已經用意志力在硬撐。工作對你來說越來越像一台自動播放的機器，少了熱情、少了意義感。你沒有完全崩潰，但如果繼續這樣下去，不用太久就會到臨界點。現在是一個好機會——在燃盡之前，找回一點屬於自己的空間和能量。",
+    advice: ["設立下班後的「不接訊息」時間", "找出一件工作以外讓你開心的事", "和信任的人說說你現在的狀態"],
+    adviceCls: "bg-orange-50 text-orange-700 border-orange-200",
+    barCls: "bg-orange-400",
+    barPct: 62
+  },
+  {
+    key: "L",
+    icon: "🔋",
+    badge: "輕度疲憊型",
+    badgeCls: "bg-yellow-100 text-yellow-700",
+    headerBg: "from-yellow-50 to-lime-50",
+    title: "電量：尚可 🟡",
+    subtitle: "有點累但還沒到臨界點，注意訊號",
+    desc: "你整體還在狀態，但已經可以感覺到疲憊感悄悄累積。工作不再那麼有趣，偶爾也會有「算了」的念頭——這些都是早期的警示訊號。現在的你有足夠的空間去調整，趁還有餘力，好好想想什麼事情真的對你重要，適時充電，不要等到電量見底才行動。",
+    advice: ["每週安排一個「完全不想工作」的半天", "重新盤點哪些任務可以說不", "做一件純粹為自己開心的事"],
+    adviceCls: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    barCls: "bg-yellow-400",
+    barPct: 38
+  },
+  {
+    key: "G",
+    icon: "⚡",
+    badge: "狀態穩定型",
+    badgeCls: "bg-green-100 text-green-700",
+    headerBg: "from-green-50 to-teal-50",
+    title: "電量：充足 🟢",
+    subtitle: "你目前的職場能量維持得相當不錯",
+    desc: "恭喜！你現在的狀態相對健康，對工作有一定的接受度，身心也沒有明顯的超載跡象。這不代表你沒有壓力，而是你找到了某種平衡的方式。繼續保持這個節奏，同時留意當壓力逐漸累積時，要及時照顧自己，別讓好狀態默默溜走。",
+    advice: ["繼續維持現有的作息和界限", "定期自我檢視工作滿意度", "把好狀態分享給身邊疲憊的朋友"],
+    adviceCls: "bg-green-50 text-green-700 border-green-200",
+    barCls: "bg-green-400",
+    barPct: 12
+  }
+];
+
+let answers = [], current = 0;
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active','fade-up');
+  });
+  const el = document.getElementById(id);
+  el.classList.add('active');
+  void el.offsetWidth;
+  el.classList.add('fade-up');
+}
+
+function startQuiz() {
+  answers = []; current = 0;
+  renderQ();
+  show('question');
+}
+
+function renderQ() {
+  const q = questions[current];
+  document.getElementById('q-num').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress').style.width = (current / questions.length * 100) + '%';
+  document.getElementById('q-text').textContent = q.text;
+
+  const colMap = [
+    { bg:'bg-rose-50',   text:'text-rose-600'  },
+    { bg:'bg-orange-50', text:'text-orange-500' },
+    { bg:'bg-amber-50',  text:'text-amber-600'  }
+  ];
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn w-full text-left flex items-start gap-4 p-4 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-white';
+    btn.innerHTML = `
+      <span class="shrink-0 mt-0.5 w-9 h-9 rounded-xl ${colMap[i].bg} ${colMap[i].text} font-bold text-sm flex items-center justify-center">${opt.letter}</span>
+      <span class="text-base sm:text-lg text-gray-700 leading-snug pt-1">${opt.text}</span>
+    `;
+    btn.onclick = () => pick(opt.letter);
+    opts.appendChild(btn);
+  });
+
+  // 卡片入場動畫
+  const card = document.getElementById('q-card');
+  card.classList.remove('fade-up');
+  void card.offsetWidth;
+  card.classList.add('fade-up');
+}
+
+function pick(letter) {
+  answers.push(letter);
+  current++;
+  if (current < questions.length) {
+    renderQ();
+  } else {
+    document.getElementById('progress').style.width = '100%';
+    show('loading');
+    setTimeout(showResult, 3000);
+  }
+}
+
+function showResult() {
+  const countA = answers.filter(a => a === 'A').length;
+  let r;
+  if      (countA >= 6) r = results[0];
+  else if (countA >= 4) r = results[1];
+  else if (countA >= 2) r = results[2];
+  else                  r = results[3];
+
+  // 倦怠量表長條圖資料
+  const countB = answers.filter(a => a === 'B').length;
+  const countC = answers.filter(a => a === 'C').length;
+  const total  = answers.length;
+
+  document.getElementById('result-header').className =
+    `px-6 pt-8 pb-6 text-center bg-gradient-to-br ${r.headerBg}`;
+  document.getElementById('result-header').innerHTML = `
+    <div class="text-6xl mb-4">${r.icon}</div>
+    <span class="inline-block text-xs font-semibold px-4 py-1.5 rounded-full ${r.badgeCls} mb-3">${r.badge}</span>
+    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">${r.title}</h2>
+    <p class="text-gray-500 text-base">${r.subtitle}</p>
+  `;
+
+  // 答題分佈橫條
+  const bars = [
+    { label:'高壓傾向 (A)', count:countA, cls:'bg-rose-400' },
+    { label:'中性應對 (B)', count:countB, cls:'bg-orange-300' },
+    { label:'狀態良好 (C)', count:countC, cls:'bg-green-400' }
+  ];
+  const barHtml = bars.map(b => `
+    <div class="flex items-center gap-3 text-sm">
+      <span class="w-24 shrink-0 text-gray-500">${b.label}</span>
+      <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div class="${b.cls} h-full rounded-full bar-anim" style="--target-w:${Math.round(b.count/total*100)}%; width:${Math.round(b.count/total*100)}%"></div>
+      </div>
+      <span class="w-6 text-right font-medium text-gray-600">${b.count}</span>
+    </div>
+  `).join('');
+  document.getElementById('result-score').innerHTML = `
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">答題分佈</p>
+    <div class="flex flex-col gap-2.5">${barHtml}</div>
+  `;
+
+  const adviceHtml = r.advice.map(a =>
+    `<li class="text-sm px-4 py-2.5 rounded-xl border ${r.adviceCls} leading-relaxed">${a}</li>`
+  ).join('');
+  document.getElementById('result-body').innerHTML = `
+    <p class="text-gray-600 text-base leading-relaxed mt-4 mb-5">${r.desc}</p>
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">給你的建議</p>
+    <ul class="flex flex-col gap-2">${adviceHtml}</ul>
+  `;
+
+  show('result');
+}
+</script>
+</body>
+</html>
