@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金錢觀・發財體質測驗</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+  * { font-family: 'Noto Sans TC', sans-serif; box-sizing: border-box; }
+
+  body {
+    background: linear-gradient(135deg, #fdf6e3 0%, #fef9f0 50%, #fff8e7 100%);
+    min-height: 100vh;
+  }
+
+  .coin-bg {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .option-btn {
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+    background: #fff;
+  }
+  .option-btn:hover {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    transform: translateX(4px);
+  }
+  .option-btn:active { transform: scale(0.97); }
+  .option-btn.selected {
+    border-color: #f59e0b !important;
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+  }
+  .option-btn.selected .opt-label {
+    background: #f59e0b !important;
+    color: #fff !important;
+  }
+
+  .progress-fill { transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+  .slide-in {
+    animation: slideIn 0.38s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(48px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.5s ease forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .coin-spin {
+    animation: coinSpin 1.4s ease-in-out infinite;
+    display: inline-block;
+  }
+  @keyframes coinSpin {
+    0%, 100% { transform: rotateY(0deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.15); }
+  }
+
+  .loading-bar {
+    animation: loadBar 3s ease forwards;
+  }
+  @keyframes loadBar {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+
+  .result-pop {
+    animation: resultPop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  @keyframes resultPop {
+    from { opacity: 0; transform: scale(0.8) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .tag-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+  }
+
+  .tip-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .tip-row:last-child { border-bottom: none; }
+</style>
+</head>
+<body class="flex items-center justify-center p-4 py-10">
+
+<div class="w-full max-w-lg">
+
+  <!-- ===== 封面 ===== -->
+  <div id="cover" class="fade-up">
+    <!-- 頂部裝飾 -->
+    <div class="coin-bg rounded-3xl p-7 text-center text-white mb-4 relative overflow-hidden">
+      <div class="shimmer absolute inset-0 pointer-events-none"></div>
+      <div class="coin-spin text-6xl mb-3">💰</div>
+      <h1 class="text-3xl font-black mb-1 tracking-wide">金錢觀測驗</h1>
+      <p class="text-amber-100 font-medium text-base">你的發財體質是哪一型？</p>
+    </div>
+
+    <!-- 說明卡 -->
+    <div class="bg-white rounded-3xl shadow-lg p-7 mb-4">
+      <p class="text-gray-600 text-base leading-relaxed mb-6">
+        透過 <span class="font-bold text-amber-500">6 道題目</span>，揭開你潛藏的金錢性格——你是天生的投資達人、穩健的守財奴，還是衝動的消費狂人？
+      </p>
+      <div class="grid grid-cols-3 gap-3 mb-6 text-center text-sm">
+        <div class="bg-amber-50 rounded-2xl p-3">
+          <div class="text-2xl mb-1">📝</div>
+          <div class="text-amber-700 font-semibold">6道題目</div>
+        </div>
+        <div class="bg-yellow-50 rounded-2xl p-3">
+          <div class="text-2xl mb-1">⚡</div>
+          <div class="text-yellow-700 font-semibold">2分鐘完成</div>
+        </div>
+        <div class="bg-orange-50 rounded-2xl p-3">
+          <div class="text-2xl mb-1">🏆</div>
+          <div class="text-orange-700 font-semibold">4種體質</div>
+        </div>
+      </div>
+      <button onclick="startQuiz()"
+        class="w-full coin-bg hover:opacity-90 active:scale-95 text-white font-black text-xl py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-amber-200 tracking-wide">
+        🚀 開始測驗
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== 測驗 ===== -->
+  <div id="quiz" class="hidden">
+    <!-- 進度 -->
+    <div class="mb-5">
+      <div class="flex justify-between text-sm font-medium text-amber-600 mb-2">
+        <span id="q-label">第 1 題</span>
+        <span id="q-fraction">1 / 6</span>
+      </div>
+      <div class="bg-amber-100 rounded-full h-3 overflow-hidden">
+        <div id="prog-bar" class="progress-fill h-3 rounded-full coin-bg" style="width:16.6%"></div>
+      </div>
+    </div>
+
+    <!-- 題目卡 -->
+    <div id="q-card" class="bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div class="coin-bg px-7 py-5 shimmer relative">
+        <p id="q-text" class="text-white font-bold text-xl leading-snug relative z-10"></p>
+      </div>
+      <div id="options" class="p-5 flex flex-col gap-3"></div>
+    </div>
+  </div>
+
+  <!-- ===== 計算中 ===== -->
+  <div id="calculating" class="hidden text-center py-14 fade-up">
+    <div class="coin-spin text-8xl mb-5">🪙</div>
+    <h2 class="text-2xl font-black text-gray-700 mb-2">計算發財指數中⋯⋯</h2>
+    <p class="text-gray-400 text-sm mb-8">正在分析你的金錢性格</p>
+    <div class="bg-amber-100 rounded-full h-3 overflow-hidden mx-auto w-64">
+      <div class="loading-bar h-3 rounded-full coin-bg"></div>
+    </div>
+    <div class="flex justify-center gap-6 mt-8 text-3xl">
+      <span style="animation: fadeUp 0.5s 0.3s both ease">💸</span>
+      <span style="animation: fadeUp 0.5s 0.6s both ease">📈</span>
+      <span style="animation: fadeUp 0.5s 0.9s both ease">🏦</span>
+    </div>
+  </div>
+
+  <!-- ===== 結果 ===== -->
+  <div id="result" class="hidden result-pop">
+    <div id="result-card" class="rounded-3xl shadow-2xl overflow-hidden">
+      <!-- 結果頭部 -->
+      <div id="result-header" class="p-8 text-center text-white relative overflow-hidden">
+        <div class="shimmer absolute inset-0 pointer-events-none"></div>
+        <div class="relative z-10">
+          <span class="tag-badge mb-4 inline-block" id="result-tag"></span>
+          <div id="result-emoji" class="text-7xl my-4"></div>
+          <h2 id="result-title" class="text-3xl font-black mb-2"></h2>
+          <p id="result-subtitle" class="text-base opacity-85 font-medium"></p>
+        </div>
+      </div>
+
+      <!-- 結果內文 -->
+      <div class="bg-white p-7">
+        <p id="result-desc" class="text-gray-600 text-base leading-relaxed mb-6"></p>
+
+        <div class="rounded-2xl p-5 mb-6" id="result-tips-box">
+          <h3 id="tips-title" class="font-black text-base mb-3"></h3>
+          <div id="result-tips"></div>
+        </div>
+
+        <button onclick="restartQuiz()"
+          class="w-full coin-bg hover:opacity-90 active:scale-95 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-200 shadow-md shadow-amber-200">
+          ↺ 再測一次
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    text: "💳 領到薪水的第一件事，你會怎麼做？",
+    options: [
+      { label: "A", text: "先存起來一部分，剩下才花" },
+      { label: "B", text: "研究一下，把一部分拿去投資" },
+      { label: "C", text: "先把上個月的帳單還完就好" }
+    ]
+  },
+  {
+    text: "🛍️ 你在選購一件東西時，最在意的是？",
+    options: [
+      { label: "A", text: "CP值，要用得久、划得來" },
+      { label: "B", text: "品牌與質感，我相信好東西值得花錢" },
+      { label: "C", text: "有沒有打折或特價活動" }
+    ]
+  },
+  {
+    text: "📉 遇到股市大跌，你的直覺反應是？",
+    options: [
+      { label: "A", text: "沉住氣，長期來看一定回來" },
+      { label: "B", text: "研究機會，逢低加碼" },
+      { label: "C", text: "焦慮不安，考慮先出場保本" }
+    ]
+  },
+  {
+    text: "🎁 朋友生日，你通常會怎麼送禮？",
+    options: [
+      { label: "A", text: "在合理預算內挑實用的" },
+      { label: "B", text: "花多少不重要，重點是對方喜歡" },
+      { label: "C", text: "常常超出預算，因為不好意思送太少" }
+    ]
+  },
+  {
+    text: "🏠 對於「買房」這件事，你的看法是？",
+    options: [
+      { label: "A", text: "要在財務穩健後再考慮，不急" },
+      { label: "B", text: "房子是資產，越早買越好" },
+      { label: "C", text: "感覺遙不可及，先不去想" }
+    ]
+  },
+  {
+    text: "💡 如果突然有一筆 10 萬元的意外之財，你會？",
+    options: [
+      { label: "A", text: "存進緊急備用金或定存" },
+      { label: "B", text: "拿去投資，讓錢再生錢" },
+      { label: "C", text: "犒賞自己，去旅遊或買心儀已久的東西" }
+    ]
+  }
+];
+
+const results = {
+  A: {
+    tag: "🛡️ 穩健型",
+    emoji: "🏦",
+    title: "財富守護者",
+    subtitle: "穩中求勝・細水長流",
+    desc: "你是天生的「守財型」人格。你對金錢有理性的掌控感，不輕易衝動消費，也很少為了面子而亂花錢。這是一種極佳的財務底氣，但偶爾也要讓錢「動起來」，才能突破財富上限。",
+    tips: [
+      { icon: "✅", text: "你的財務紀律是最強的護城河" },
+      { icon: "💡", text: "試著把部分儲蓄轉移到低風險投資" },
+      { icon: "📚", text: "學習基礎理財知識，讓錢更有效率" }
+    ],
+    tipsTitle: "💼 你的財富進化建議",
+    gradient: "linear-gradient(135deg, #0ea5e9, #0284c7)",
+    tipsBg: "#eff6ff",
+    tipsColor: "#1e40af"
+  },
+  B: {
+    tag: "🚀 積極型",
+    emoji: "📈",
+    title: "天生發財體質",
+    subtitle: "敢於投資・財富加速器",
+    desc: "恭喜你！你的金錢觀非常積極主動，懂得讓金錢為你工作。你相信「錢滾錢」的力量，也願意學習並承擔合理的風險。只要加強風險控管，你很有潛力打造真正的財富自由！",
+    tips: [
+      { icon: "🏆", text: "你的格局與膽識是發財的核心驅動力" },
+      { icon: "⚠️", text: "記得保留3～6個月生活費的緊急備用金" },
+      { icon: "🎯", text: "設定清晰的財務目標，讓行動更有方向" }
+    ],
+    tipsTitle: "🔥 你的財富加速建議",
+    gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
+    tipsBg: "#fffbeb",
+    tipsColor: "#92400e"
+  },
+  C: {
+    tag: "💸 享樂型",
+    emoji: "🎢",
+    title: "當下享樂派",
+    subtitle: "活在當下・財富跳票中",
+    desc: "你對生活品質很重視，也知道享受當下的重要——這是好事。但你的金錢容易「活在當下」，存款增長速度偏慢，甚至有時會感到月光或焦慮。建立一套自動化儲蓄機制，會讓你的財務大幅改善！",
+    tips: [
+      { icon: "🌟", text: "你懂得生活，只是需要給未來的自己也留一份" },
+      { icon: "📱", text: "試試「先存後花」：薪水入帳即自動轉帳存款" },
+      { icon: "🗓️", text: "每月記帳一次，找出最大的非必要支出" }
+    ],
+    tipsTitle: "🛠️ 你的財富重建建議",
+    gradient: "linear-gradient(135deg, #ec4899, #be185d)",
+    tipsBg: "#fdf2f8",
+    tipsColor: "#9d174d"
+  },
+  MIXED: {
+    tag: "⚖️ 混合型",
+    emoji: "🎭",
+    title: "財富混搭人格",
+    subtitle: "理性感性兼具・等待覺醒",
+    desc: "你的金錢觀融合了多種性格——有時謹慎，有時衝動，有時又充滿野心。這種複雜性代表你還在尋找最適合自己的財務風格。好消息是：你已經踏出了認識自己的第一步！",
+    tips: [
+      { icon: "🔍", text: "花一週記錄所有支出，找到你的金錢漏洞" },
+      { icon: "🧭", text: "設定一個明確的3年財務目標來凝聚方向" },
+      { icon: "📖", text: "讀一本理財書，建立屬於你的金錢哲學" }
+    ],
+    tipsTitle: "🧩 你的財富覺醒建議",
+    gradient: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+    tipsBg: "#f5f3ff",
+    tipsColor: "#4c1d95"
+  }
+};
+
+let answers = [];
+let current = 0;
+
+function startQuiz() {
+  document.getElementById('cover').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  renderQuestion(0);
+}
+
+function renderQuestion(idx) {
+  current = idx;
+  const q = questions[idx];
+  const total = questions.length;
+  const pct = ((idx + 1) / total * 100).toFixed(1);
+
+  document.getElementById('q-label').textContent = `第 ${idx + 1} 題`;
+  document.getElementById('q-fraction').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('prog-bar').style.width = pct + '%';
+
+  const card = document.getElementById('q-card');
+  card.classList.remove('slide-in');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+
+  document.getElementById('q-text').textContent = q.text;
+
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn w-full flex items-center gap-4 p-4 rounded-2xl text-left';
+    btn.innerHTML = `
+      <span class="opt-label flex-shrink-0 w-9 h-9 rounded-xl bg-amber-100 text-amber-600 font-black text-base flex items-center justify-center">${opt.label}</span>
+      <span class="text-gray-700 font-medium text-base leading-snug">${opt.text}</span>
+    `;
+    btn.addEventListener('click', () => pick(opt.label, btn));
+    optDiv.appendChild(btn);
+  });
+}
+
+function pick(label, btn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[current] = label;
+  setTimeout(() => {
+    if (current < questions.length - 1) {
+      renderQuestion(current + 1);
+    } else {
+      showCalculating();
+    }
+  }, 400);
+}
+
+function showCalculating() {
+  document.getElementById('quiz').classList.add('hidden');
+  const el = document.getElementById('calculating');
+  el.classList.remove('hidden');
+  el.classList.remove('fade-up');
+  void el.offsetWidth;
+  el.classList.add('fade-up');
+  setTimeout(showResult, 3000);
+}
+
+function showResult() {
+  document.getElementById('calculating').classList.add('hidden');
+
+  const count = { A: 0, B: 0, C: 0 };
+  answers.forEach(a => { if (count[a] !== undefined) count[a]++; });
+
+  const max = Math.max(count.A, count.B, count.C);
+  const winners = Object.keys(count).filter(k => count[k] === max);
+  const key = winners.length > 1 ? 'MIXED' : winners[0];
+  const r = results[key];
+
+  document.getElementById('result-tag').textContent = r.tag;
+  document.getElementById('result-emoji').textContent = r.emoji;
+  document.getElementById('result-title').textContent = r.title;
+  document.getElementById('result-subtitle').textContent = r.subtitle;
+  document.getElementById('result-desc').textContent = r.desc;
+
+  document.getElementById('result-header').style.background = r.gradient;
+
+  const tipsBox = document.getElementById('result-tips-box');
+  tipsBox.style.background = r.tipsBg;
+
+  document.getElementById('tips-title').textContent = r.tipsTitle;
+  document.getElementById('tips-title').style.color = r.tipsColor;
+
+  const tipsEl = document.getElementById('result-tips');
+  tipsEl.innerHTML = r.tips.map(t =>
+    `<div class="tip-row" style="color:${r.tipsColor}; border-color:${r.tipsColor}22">
+      <span style="flex-shrink:0">${t.icon}</span>
+      <span>${t.text}</span>
+    </div>`
+  ).join('');
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.classList.remove('hidden');
+  resultDiv.classList.remove('result-pop');
+  void resultDiv.offsetWidth;
+  resultDiv.classList.add('result-pop');
+}
+
+function restartQuiz() {
+  answers = [];
+  current = 0;
+  document.getElementById('result').classList.add('hidden');
+  const cover = document.getElementById('cover');
+  cover.classList.remove('hidden');
+  cover.classList.remove('fade-up');
+  void cover.offsetWidth;
+  cover.classList.add('fade-up');
+}
+</script>
+</body>
+</html>
